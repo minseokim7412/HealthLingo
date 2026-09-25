@@ -147,8 +147,7 @@ public class ConsoleUI {
         String date = val.readDate(sc, "조회할 날짜를 입력하세요 (yyyy-MM-dd) >> ");
         List<WorkoutRecord> list = wm.getWorkoutsByDate(date);
         if (list.isEmpty()) {
-            // EH-02: 존재하지 않는 날짜 조회 시 안내 후 메뉴 복귀
-            System.out.println("[알림] 해당 날짜(" + date + ")의 운동 기록이 없습니다. (EH-02)");
+            // EH-02: WorkoutManager가 안내 메시지를 이미 출력했으므로 메뉴로 복귀만 한다.
             return;
         }
         System.out.println("[" + date + " 운동 기록]");
@@ -210,10 +209,25 @@ public class ConsoleUI {
     }
 
     private void registerBodyFlow() {
+        String id = "";
+        List<BodyRecord> existing = bm.getAllRecords();
+        if (!existing.isEmpty()) {
+            System.out.println("[기존 신체 기록]");
+            for (BodyRecord r : existing) {
+                System.out.println("- " + r.getId() + " | " + r.getDate() + " | " + r.getWeight() + "kg");
+            }
+            id = val.readOptional(sc, "수정할 기록 ID (신규 등록은 그냥 Enter) >> ");
+            if (!id.isEmpty() && bm.findById(id) == null) {
+                System.out.println("[알림] 해당 ID의 기록이 없어 신규 등록으로 진행합니다.");
+                id = "";
+            }
+        }
+
+        String date = id.isEmpty() ? LocalDate.now().toString() : bm.findById(id).getDate();
         double weight = val.readPositiveDouble(sc, "체중(kg) 입력 >> ");
         double bodyFat = val.readNonNegativeDouble(sc, "체지방률(%) 입력 >> ");
         double muscleMass = val.readNonNegativeDouble(sc, "골격근량(kg) 입력 >> ");
-        BodyRecord rec = bm.upsertBodyRecord(LocalDate.now().toString(), weight, bodyFat, muscleMass);
+        BodyRecord rec = bm.upsertBodyRecord(id, date, weight, bodyFat, muscleMass);
 
         if (bm.isBmiCalculated(rec)) {
             System.out.println("[완료] BMI " + String.format("%.1f", rec.getBmi()) + "로 계산되어 저장되었습니다.");

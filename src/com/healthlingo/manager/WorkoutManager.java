@@ -8,11 +8,14 @@ import com.healthlingo.model.WorkoutRecord;
 import com.healthlingo.storage.JsonStorage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * MOD-002 WorkoutManager (FR-01, EH-01, EH-02)
  * 종목명 자유 입력 처리, 날짜별 운동 기록 및 루틴 등록·조회를 담당한다.
+ * 설계서 9장(비기능요구사항): 날짜 키 Map을 사용해 데이터가 누적되어도 O(1)에 가깝게 조회한다.
  */
 public class WorkoutManager {
 
@@ -22,6 +25,7 @@ public class WorkoutManager {
     private final JsonStorage stg;
     private final ExerciseCatalogManager cat;
     private final List<WorkoutRecord> recs = new ArrayList<>();
+    private final Map<String, List<WorkoutRecord>> byDate = new HashMap<>();
     private final List<Routine> rts = new ArrayList<>();
     private int wSeq = 1;
     private int rSeq = 1;
@@ -36,6 +40,7 @@ public class WorkoutManager {
         for (Object item : stg.loadArray(WORKOUT_FILE)) {
             WorkoutRecord r = WorkoutRecord.fromJson((JsonObject) item);
             recs.add(r);
+            byDate.computeIfAbsent(r.getDate(), d -> new ArrayList<>()).add(r);
             int n = parseSeq(r.getId());
             if (n >= wSeq) wSeq = n + 1;
         }
@@ -61,15 +66,16 @@ public class WorkoutManager {
         String id = "W" + String.format("%04d", wSeq++);
         WorkoutRecord rec = new WorkoutRecord(id, date, exerciseId, sets);
         recs.add(rec);
+        byDate.computeIfAbsent(date, d -> new ArrayList<>()).add(rec);
         saveWorkouts();
         return rec;
     }
 
-    /** 날짜별 조회. 기록이 없으면 빈 리스트를 반환하고 호출자가 EH-02로 안내한다. */
+    /** 날짜별 조회. EH-02: 기록이 없으면 안내 메시지를 출력하고 빈 리스트를 반환해 메뉴로 복귀시킨다. */
     public List<WorkoutRecord> getWorkoutsByDate(String date) {
-        List<WorkoutRecord> res = new ArrayList<>();
-        for (WorkoutRecord r : recs) {
-            if (r.getDate().equals(date)) res.add(r);
+        List<WorkoutRecord> res = byDate.getOrDefault(date, new ArrayList<>());
+        if (res.isEmpty()) {
+            System.out.println("[알림] 해당 날짜(" + date + ")의 운동 기록이 없습니다. (EH-02)");
         }
         return res;
     }

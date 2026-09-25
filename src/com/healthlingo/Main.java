@@ -29,6 +29,13 @@ public class Main {
         StatisticsManager sm = new StatisticsManager(wm, bm, cat, nm, bpv);
 
         ConsoleUI ui = new ConsoleUI(wm, bm, nm, rm, sm, cat);
-        ui.run();
+
+        // NFR(가용성): 예기치 못한 예외로도 프로그램이 비정상 종료되지 않도록 전역으로 처리한다.
+        // 각 Manager가 즉시 저장 원칙을 따르므로, 종료 직전까지의 데이터는 이미 JSON 파일에 반영되어 있다.
+        try {
+            ui.run();
+        } catch (Exception e) {
+            System.out.println("[알림] 예기치 못한 오류가 발생하여 프로그램을 종료합니다. (" + e.getMessage() + ")");
+        }
     }
 }

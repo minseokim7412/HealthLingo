@@ -66,20 +66,44 @@ public class BodyManager {
     }
 
     /**
-     * 체중·체지방률·골격근량을 등록한다.
+     * 체중·체지방률·골격근량을 등록/수정한다. (설계서 6.3절: upsertBodyRecord(id?, weight, bodyFat, muscleMass))
+     * id가 비어있으면 신규 등록, 기존 id가 주어지면 해당 레코드의 값을 갱신한다.
      * 신장이 등록되어 있으면 BMI를 계산하고, 없으면 EH-05에 따라 계산을 생략한다.
-     * @return 생성된 BodyRecord와 BMI 계산 성공 여부
+     * @return 등록/수정된 BodyRecord
      */
-    public BodyRecord upsertBodyRecord(String date, double weight, double bodyFat, double muscleMass) {
+    public BodyRecord upsertBodyRecord(String id, String date, double weight, double bodyFat, double muscleMass) {
         double bmi = 0;
         if (bpv.isValidForBmi(prof)) {
             bmi = weight / (prof.getHeight() * prof.getHeight());
         }
-        String id = "B" + String.format("%04d", seq++);
-        BodyRecord rec = new BodyRecord(id, date, weight, bodyFat, muscleMass, bmi);
+
+        if (id != null && !id.isEmpty()) {
+            int idx = indexOfId(id);
+            if (idx >= 0) {
+                BodyRecord rec = new BodyRecord(id, date, weight, bodyFat, muscleMass, bmi);
+                recs.set(idx, rec);
+                save();
+                return rec;
+            }
+        }
+
+        String newId = "B" + String.format("%04d", seq++);
+        BodyRecord rec = new BodyRecord(newId, date, weight, bodyFat, muscleMass, bmi);
         recs.add(rec);
         save();
         return rec;
+    }
+
+    public BodyRecord findById(String id) {
+        int idx = indexOfId(id);
+        return idx >= 0 ? recs.get(idx) : null;
+    }
+
+    private int indexOfId(String id) {
+        for (int i = 0; i < recs.size(); i++) {
+            if (recs.get(i).getId().equals(id)) return i;
+        }
+        return -1;
     }
 
     public boolean isBmiCalculated(BodyRecord rec) {

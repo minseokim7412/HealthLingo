@@ -32,6 +32,12 @@ public class InputValidator {
         }
     }
 
+    /** 빈 값도 허용하는 선택 입력(예: 신규/수정 선택용 ID). 별도 형식 검증은 하지 않는다. */
+    public String readOptional(Scanner sc, String msg) {
+        System.out.print(msg);
+        return sc.nextLine().trim();
+    }
+
     /** 공백이 아닌 문자열 검증 */
     public String readNonEmpty(Scanner sc, String msg) {
         while (true) {
