@@ -2,19 +2,13 @@ package com.healthlingo.model;
 
 import com.healthlingo.json.JsonObject;
 
-/**
- * body.json - 신체 변화 이력
- * PK: id
- */
 public class BodyRecord {
-
     private String id;
     private String date;
     private double weight;
     private double bodyFat;
     private double muscleMass;
-    private double bmi; // 신장 미등록(EH-05) 시 0으로 계산 생략
-
+    private double bmi;
     public BodyRecord() {
     }
 
@@ -26,7 +20,6 @@ public class BodyRecord {
         this.muscleMass = muscleMass;
         this.bmi = bmi;
     }
-
     public String getId() { return id; }
     public String getDate() { return date; }
     public double getWeight() { return weight; }
@@ -34,7 +27,6 @@ public class BodyRecord {
     public double getMuscleMass() { return muscleMass; }
     public double getBmi() { return bmi; }
     public void setBmi(double bmi) { this.bmi = bmi; }
-
     public JsonObject toJson() {
         return new JsonObject()
                 .put("id", id)
@@ -44,7 +36,6 @@ public class BodyRecord {
                 .put("muscleMass", muscleMass)
                 .put("bmi", bmi);
     }
-
     public static BodyRecord fromJson(JsonObject o) {
         return new BodyRecord(
                 o.getString("id", ""),

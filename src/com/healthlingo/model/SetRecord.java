@@ -2,7 +2,6 @@ package com.healthlingo.model;
 
 import com.healthlingo.json.JsonObject;
 
-/** WorkoutRecord 내부에 포함되는 세트 단위 값 객체 (weight, reps) */
 public class SetRecord {
 
     private final double weight;
@@ -24,3 +23,4 @@ public class SetRecord {
         return new SetRecord(o.getDouble("weight", 0), o.getInt("reps", 0));
     }
 }
+

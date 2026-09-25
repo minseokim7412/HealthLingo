@@ -17,19 +17,17 @@ Maven/Gradle 없이 `javac`만으로 빌드합니다.
 ./run.sh
 ```
 
-또는 직접 실행:
+`build.sh`는 컴파일 후 `healthlingo.jar`(단일 실행 파일, 설계서 9장 운영성 요구사항)도 함께 만듭니다.
 
 ```bash
-find src -name "*.java" > sources.txt
-javac -d out -encoding UTF-8 @sources.txt
-java -Dstdout.encoding=UTF-8 -cp out com.healthlingo.Main
+java -Dstdout.encoding=UTF-8 -jar healthlingo.jar
 ```
 
 Windows(PowerShell)에서 한글이 깨질 경우 콘솔 코드페이지를 UTF-8로 전환하세요.
 
 ```powershell
 chcp 65001
-java -Dstdout.encoding=UTF-8 -cp out com.healthlingo.Main
+java -Dstdout.encoding=UTF-8 -jar healthlingo.jar
 ```
 
 ## 주요 기능 (설계서 FR-01~05)

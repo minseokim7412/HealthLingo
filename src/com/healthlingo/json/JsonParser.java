@@ -1,18 +1,12 @@
 package com.healthlingo.json;
 
-/**
- * 최소 재귀 하강 JSON 파서. 표준 JSON(객체, 배열, 문자열, 숫자, boolean, null)만 지원한다.
- */
 public class JsonParser {
-
     private final String text;
     private int pos;
-
     private JsonParser(String text) {
         this.text = text;
         this.pos = 0;
     }
-
     public static Object parse(String text) {
         JsonParser p = new JsonParser(text);
         p.skipWhitespace();
@@ -21,7 +15,6 @@ public class JsonParser {
         }
         return p.parseValue();
     }
-
     private Object parseValue() {
         skipWhitespace();
         char c = peek();
@@ -35,7 +28,6 @@ public class JsonParser {
             default: return parseNumber();
         }
     }
-
     private JsonObject parseObject() {
         JsonObject obj = new JsonObject();
         expect('{');
@@ -64,7 +56,6 @@ public class JsonParser {
         }
         return obj;
     }
-
     private JsonArray parseArray() {
         JsonArray arr = new JsonArray();
         expect('[');
@@ -89,7 +80,6 @@ public class JsonParser {
         }
         return arr;
     }
-
     private String parseString() {
         skipWhitespace();
         expect('"');
@@ -121,7 +111,6 @@ public class JsonParser {
         }
         return sb.toString();
     }
-
     private Double parseNumber() {
         int start = pos;
         while (pos < text.length() && "-+.eE0123456789".indexOf(text.charAt(pos)) >= 0) {
@@ -129,7 +118,6 @@ public class JsonParser {
         }
         return Double.parseDouble(text.substring(start, pos));
     }
-
     private Boolean parseBoolean() {
         if (text.startsWith("true", pos)) {
             pos += 4;
@@ -140,7 +128,6 @@ public class JsonParser {
         }
         throw new IllegalArgumentException("JSON 파싱 오류: boolean 예상 위치 " + pos);
     }
-
     private void parseNull() {
         if (text.startsWith("null", pos)) {
             pos += 4;
@@ -148,17 +135,14 @@ public class JsonParser {
             throw new IllegalArgumentException("JSON 파싱 오류: null 예상 위치 " + pos);
         }
     }
-
     private void skipWhitespace() {
         while (pos < text.length() && Character.isWhitespace(text.charAt(pos))) {
             pos++;
         }
     }
-
     private char peek() {
         return text.charAt(pos);
     }
-
     private void expect(char c) {
         skipWhitespace();
         if (text.charAt(pos) != c) {

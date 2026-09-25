@@ -3,28 +3,19 @@ package com.healthlingo.json;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * 최소 구현 JSON 객체. org.json 라이브러리 대신 외부 의존성 없이 동작하도록
- * JsonStorage 모듈 전용으로 만든 경량 자료구조이다.
- */
 public class JsonObject {
-
     private final Map<String, Object> map = new LinkedHashMap<>();
-
     public JsonObject put(String key, Object value) {
         map.put(key, value);
         return this;
     }
-
     public boolean has(String key) {
         return map.containsKey(key) && map.get(key) != null;
     }
-
     public String getString(String key, String def) {
         Object v = map.get(key);
         return v == null ? def : String.valueOf(v);
     }
-
     public double getDouble(String key, double def) {
         Object v = map.get(key);
         if (v == null) return def;
@@ -35,29 +26,24 @@ public class JsonObject {
             return def;
         }
     }
-
     public int getInt(String key, int def) {
         return (int) Math.round(getDouble(key, def));
     }
-
     public boolean getBoolean(String key, boolean def) {
         Object v = map.get(key);
         if (v == null) return def;
         if (v instanceof Boolean) return (Boolean) v;
         return Boolean.parseBoolean(String.valueOf(v));
     }
-
     public JsonObject getJsonObject(String key) {
         Object v = map.get(key);
         return (v instanceof JsonObject) ? (JsonObject) v : null;
     }
-
     public JsonArray getJsonArray(String key) {
         Object v = map.get(key);
         if (v instanceof JsonArray) return (JsonArray) v;
         return new JsonArray();
     }
-
     public Map<String, Object> raw() {
         return map;
     }
