@@ -1,5 +1,10 @@
 # Compiled class file
 *.class
+/out/
+sources.txt
+
+# 실행 시 생성되는 로컬 JSON 데이터 (설계서 1.2절: 로컬 저장, 배포 대상 아님)
+/data/*.json
 
 # Log file
 *.log
