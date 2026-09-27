@@ -14,7 +14,7 @@ if ! command -v jar > /dev/null 2>&1; then
   JAVA_HOME_DIR=$(java -XshowSettings:properties -version 2>&1 | awk -F'= ' '/java\.home/{print $2}' | tr -d '\r')
   JAR_CMD="$(cygpath -u "$JAVA_HOME_DIR" 2>/dev/null || echo "$JAVA_HOME_DIR")/bin/jar"
 fi
-"$JAR_CMD" cfe healthlingo.jar com.healthlingo.Main -C out .
+"$JAR_CMD" cfe healthlingo.jar com.Main -C out .
 
 echo "빌드 완료: healthlingo.jar 생성됨 (클래스 파일은 out/ 에도 있음)"
 echo "실행: java -Dstdout.encoding=UTF-8 -jar healthlingo.jar"
