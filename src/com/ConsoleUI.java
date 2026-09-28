@@ -17,6 +17,7 @@ import com.model.BodyModels.UserProfile;
 import com.model.WorkoutModels.WorkoutRecord;
 import com.validator.InputValidator;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -43,7 +44,12 @@ public class ConsoleUI {
         System.out.print(CYAN + msg + RESET);
     }
 
-    private final Scanner c = new Scanner(System.in);
+    private static Charset consoleCharset() {
+        java.io.Console con = System.console();
+        return con != null ? con.charset() : Charset.defaultCharset();
+    }
+
+    private final Scanner c = new Scanner(System.in, consoleCharset());
     private final InputValidator v = new InputValidator();
 
     private final WorkoutManager w;
